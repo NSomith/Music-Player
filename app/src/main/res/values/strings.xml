@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Music</string>
+    <string name="notification_channel_name">Music channel</string>
+    <string name="notification_channel_des">Show the currently playing music</string>
+</resources>
