@@ -26,6 +26,11 @@ import javax.inject.Inject
 
 private const val SERVICE_TAG = "MusicService"
 
+/* We're implementing this MediaBrowserServiceCompat here because this class contains a lot of tools
+* which allows us to implement a file manager-like application e.g. an app like Spotify is almost
+* like a file browser where the user can go through albums and playlists just like in a file manager */
+
+
 @AndroidEntryPoint
 class MusicService : MediaBrowserServiceCompat() {
 
@@ -38,8 +43,10 @@ class MusicService : MediaBrowserServiceCompat() {
     @Inject
     lateinit var firebaseMusicSource: FirebaseMusicSource
 
-    private val serviceJob = Job()
+    private val serviceJob = Job()//A service is not Asynchronous by Default. It runs on the main thread.
     private val serviceScope = CoroutineScope(Dispatchers.Main + serviceJob) //we dont need to manually kill the scop or service wll do it
+    //This ensures cancellation of coroutines when the service dies
+    //The + operator above means that it will merge properties of Dispatchers.Main and serviceJob together for our custom defined serviceScope
 
     private lateinit var mediaSession: MediaSessionCompat
     private lateinit var mediaSessionConnector: MediaSessionConnector
@@ -66,11 +73,14 @@ class MusicService : MediaBrowserServiceCompat() {
             firebaseMusicSource.fetchMediaData()
         }
 
-//        when we click on the notification
+        /* This activityIntent is for the notification i.e. when the user clicks on the music notification, he
+        should be brought to a specific activity within the app */
         val activityIntent = packageManager?.getLaunchIntentForPackage(packageName)?.let {
             PendingIntent.getActivity(this, 0, it, 0)
         }
 
+        //A mediaSession contains all the important data about the current music session of the user
+        //Information like, it informs the Android OS that a media is playing so that it can apply media actions like vol up/down to your media only
         mediaSession = MediaSessionCompat(this, SERVICE_TAG).apply {
             setSessionActivity(activityIntent)
             isActive = true
@@ -82,7 +92,7 @@ class MusicService : MediaBrowserServiceCompat() {
             mediaSession.sessionToken,
             MusicPlayerNotificationListener(this)
         ){
-            //call when the current song switches for the last function
+            //call when the current song switches for the SONG duration
             currSongDuration = exoPlayer.duration
         }
 //        happens when user choose a new song

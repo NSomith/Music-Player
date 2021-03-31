@@ -1,0 +1,4 @@
+Mediasession_ tell the system and other app what is paying and add support for media controls
+
+PlaybackStateCompat _ use for current state eg playing pause by setState() method
+                        and the current action eg pause or stop or playpause by setAction()

@@ -26,7 +26,7 @@ object ServiceModule {
     @Provides
     fun provideAudioAttribute() = AudioAttributes.Builder()
         .setContentType(C.CONTENT_TYPE_MUSIC)
-        .setUsage(C.USAGE_ALARM)
+        .setUsage(C.USAGE_MEDIA)
         .build()
 
     @ServiceScoped
@@ -35,8 +35,8 @@ object ServiceModule {
         @ApplicationContext context: Context,
         audioAttributes: AudioAttributes
     ) = SimpleExoPlayer.Builder(context).build().apply {
-        setAudioAttributes(audioAttributes)
-        setHandleAudioBecomingNoisy(true)
+        setAudioAttributes(audioAttributes,true)
+        setHandleAudioBecomingNoisy(true) //if user plugind the headphone then music will be pused since it will be noisy
     }
 
     fun provideDataSourceFactory(

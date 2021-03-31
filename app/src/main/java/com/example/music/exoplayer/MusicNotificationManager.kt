@@ -18,8 +18,12 @@ import com.google.android.exoplayer2.ui.PlayerNotificationManager
 class MusicNotificationManager(
     val context: Context,
     sessionToken: MediaSessionCompat.Token,
-    notificationListener: PlayerNotificationManager.NotificationListener,
-    val newSongCallback:()->Unit
+    notificationListener: PlayerNotificationManager.NotificationListener,/* This is a listener that
+        contains functions that can be used after the notification is created e.g. when user swipes
+        away the notification, we need to stop the foreground service (media) */
+
+    val newSongCallback:()->Unit/* Here we can detect when a new song starts playing.
+        It can be used to set current duration of the song*/
 ) {
     private val notificationManger:PlayerNotificationManager
 
@@ -35,7 +39,8 @@ class MusicNotificationManager(
                 notificationListener
         ).apply {
             setSmallIcon(R.drawable.ic_music)
-            setMediaSessionToken(sessionToken)
+            setMediaSessionToken(sessionToken)/*This will give our notificationManager access to
+            current media in our media service*/
         }
     }
 
@@ -64,7 +69,7 @@ class MusicNotificationManager(
                     .load(mediaController.metadata.description.iconUri)
                     .into(object :CustomTarget<Bitmap>(){
                         override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
-                            callback.onBitmap(resource)
+                            callback.onBitmap(resource) //when our imgae is loaded since it a callback
                         }
 
                         override fun onLoadCleared(placeholder: Drawable?) {

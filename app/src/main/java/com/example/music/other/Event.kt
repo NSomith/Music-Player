@@ -13,5 +13,6 @@ open class Event<out T>(val data:T) {
         }
     }
 
-    fun peekContent() = data
+    fun peekContent() = data/* if the user needs to get the data even though it is handled already,
+    this class comes in handy then */
 }

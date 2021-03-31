@@ -34,9 +34,11 @@ class MusicPlayBackPreparer(
 
     override fun onPrepareFromMediaId(mediaId: String, playWhenReady: Boolean, extras: Bundle?) {
 //       prepare the music when the id/music is ready
-//        playWhenReady means play it or when the use play it
+//        playWhenReady means play it or when use play it
         firebaseMusicSource.whenReady {
-            val itemToPlay = firebaseMusicSource.songs.find { mediaId == it.description.mediaId }
+            val itemToPlay = firebaseMusicSource.songs.find {
+                mediaId == it.description.mediaId
+            }
             playPlayer(itemToPlay)
         }
     }

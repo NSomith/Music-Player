@@ -15,6 +15,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
+//This class will get the list of songs that we got from FireStore DB
 class FirebaseMusicSource @Inject constructor(
     private val musicDatabase: MusicDatabase
 ){
@@ -77,7 +78,7 @@ class FirebaseMusicSource @Inject constructor(
             }
         }
 
-     fun whenReady(action:(Boolean)->Unit):Boolean{
+    fun whenReady(action:(Boolean)->Unit):Boolean{
         if(state == STATE_CREATE|| state == STATE_INITIALIZING){
             readylisteners+=action
             return false //music source not ready so add to the list
@@ -87,6 +88,8 @@ class FirebaseMusicSource @Inject constructor(
         }
     }
 }
+//These states depict the current state of our DataSource
+// (since we need an immediate result whether the data is ready or not in our app)
 enum class State{
     STATE_CREATE,
     STATE_INITIALIZING,

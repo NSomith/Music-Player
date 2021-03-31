@@ -44,7 +44,8 @@ class MusicServiceConnection(
     }
 
     val transportControls: MediaControllerCompat.TransportControls
-        get() = mediaController.transportControls
+        get() = mediaController.transportControls //  fills that void, giving you methods to trigger any action (including custom actions specific to your media playback such as ‘skip forward 30 seconds’). All of which directly trigger the
+    // methods in your MediaSessionCompat.Callback in your Servic
 
     fun subscribe(parentId:String,callback:MediaBrowserCompat.SubscriptionCallback){
         mediaBrowser.subscribe(parentId,callback)
