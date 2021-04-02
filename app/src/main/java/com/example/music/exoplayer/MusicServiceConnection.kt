@@ -14,7 +14,7 @@ import androidx.lifecycle.MutableLiveData
 import com.example.music.other.Event
 import com.example.music.other.Resource
 import com.example.music.other.Utility.NETWORK_ERROR
-
+//This class sits between Activity/Fragment and Service and helps them connect and communicate
 class MusicServiceConnection(
     context:Context
 ) {
@@ -40,13 +40,19 @@ class MusicServiceConnection(
         mediaBrowserConnectionCallback,
         null
     ).apply {
-        connect()
+        connect() //call the onConnected() fun in MediaBrowserConnectionCallback
     }
 
     val transportControls: MediaControllerCompat.TransportControls
-        get() = mediaController.transportControls //  fills that void, giving you methods to trigger any action (including custom actions specific to your media playback such as ‘skip forward 30 seconds’). All of which directly trigger the
-    // methods in your MediaSessionCompat.Callback in your Servic
+        get() = mediaController.transportControls //  fills that void, giving you methods to trigger any action
+    // (including custom actions specific to your media playback such as ‘skip forward 30 seconds’). All of which directly trigger the
+    // methods in your MediaSessionCompat.Callback in your Service
+    /* using get() here because the transportControls
+         are not instantiated yet ( observe that the var mediaController is a lateinit var (line 26) )
+         therefore, we only want to access it when a value is actually provided otherwise the code
+         will crash! */
 
+//    to subscribe to a perticular media id
     fun subscribe(parentId:String,callback:MediaBrowserCompat.SubscriptionCallback){
         mediaBrowser.subscribe(parentId,callback)
     }
@@ -76,6 +82,8 @@ class MusicServiceConnection(
     }
 
     private inner class MediaControllerCallback:MediaControllerCompat.Callback(){
+        /* This function is called whenever the state of our music player changes and it updates
+        * the current value(or state) to _playbackState*/
         override fun onPlaybackStateChanged(state: PlaybackStateCompat?) {
             _playbackState.postValue(state)
         }

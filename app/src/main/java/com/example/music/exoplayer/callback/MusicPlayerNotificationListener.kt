@@ -23,7 +23,8 @@ class MusicPlayerNotificationListener(
     override fun onNotificationPosted(
         notificationId: Int,
         notification: Notification,
-        ongoing: Boolean
+        ongoing: Boolean    /*For a service, the {@code ongoing} flag can be used as an indicator as to whether it
+    * should be in the foreground.*/
     ) {
         super.onNotificationPosted(notificationId, notification, ongoing)
         musicService.apply {

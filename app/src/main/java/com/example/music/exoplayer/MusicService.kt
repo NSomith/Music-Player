@@ -97,6 +97,7 @@ class MusicService : MediaBrowserServiceCompat() {
         }
 //        happens when user choose a new song
         val musicPlayBackPreparer = MusicPlayBackPreparer(firebaseMusicSource){
+            //This will be used every time the user chooses a new song
             currentPlayingSong = it
             preparePlayer(
                 firebaseMusicSource.songs,
@@ -114,8 +115,8 @@ class MusicService : MediaBrowserServiceCompat() {
     }
 
     private fun preparePlayer(
-        songs:List<MediaMetadataCompat>,
-        itemToPlay:MediaMetadataCompat?,
+        songs:List<MediaMetadataCompat>, //list of song we want to play
+        itemToPlay:MediaMetadataCompat?, //current song we want to play
         playNow:Boolean
     ){
         val currSongInx = if(currentPlayingSong == null) 0 else songs.indexOf(itemToPlay)
@@ -145,7 +146,7 @@ class MusicService : MediaBrowserServiceCompat() {
 
     override fun onLoadChildren(
         parentId: String,
-        result: Result<MutableList<MediaBrowserCompat.MediaItem>>
+        result: Result<MutableList<MediaBrowserCompat.MediaItem>> //media item can be a songs or a playlist
     ) {
         when(parentId){
             MEDIA_ROOT_ID->{
@@ -154,15 +155,15 @@ class MusicService : MediaBrowserServiceCompat() {
                         result.sendResult(firebaseMusicSource.asMediaItems())
                         if(!isPlayerInitialzed && firebaseMusicSource.songs.isNotEmpty()){
                             preparePlayer(firebaseMusicSource.songs,firebaseMusicSource.songs[0],false)
-                            isPlayerInitialzed = true
+                            isPlayerInitialzed = true //check for the first time when we open the app if the player is initialized or not
                         }
                     }else{
-                        mediaSession.sendSessionEvent(NETWORK_ERROR,null)
+                        mediaSession.sendSessionEvent(NETWORK_ERROR,null) //onSessionEvent is called in the ServiceConnection class
                         result.sendResult(null)
                     }
                 }
                 if(!resultSent){
-                    result.detach() //check for the later part
+                    result.detach()
                 }
             }
         }
@@ -171,7 +172,7 @@ class MusicService : MediaBrowserServiceCompat() {
 //    propate a specific song to the notification
     inner class MusicQueueNavigator:TimelineQueueNavigator(mediaSession){
         override fun getMediaDescription(player: Player, windowIndex: Int): MediaDescriptionCompat {
-            return firebaseMusicSource.songs[windowIndex].description
+            return firebaseMusicSource.songs[windowIndex].description //when the song changes show the new description of the song
         }
     }
 }

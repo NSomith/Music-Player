@@ -10,9 +10,11 @@ import com.google.android.exoplayer2.ControlDispatcher
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.ext.mediasession.MediaSessionConnector
 
+/* This class provides us with the functions that will be called on player events such as:
+when the ExoPlayer (Music Player) is prepared */
 class MusicPlayBackPreparer(
     val firebaseMusicSource: FirebaseMusicSource,
-    val playPlayer:(MediaMetadataCompat?)->Unit
+    val playerPrepared:(MediaMetadataCompat?)->Unit //Gives out metadata of current track
 ) :MediaSessionConnector.PlaybackPreparer{
     override fun onCommand(
         player: Player,
@@ -39,7 +41,7 @@ class MusicPlayBackPreparer(
             val itemToPlay = firebaseMusicSource.songs.find {
                 mediaId == it.description.mediaId
             }
-            playPlayer(itemToPlay)
+            playerPrepared(itemToPlay)
         }
     }
 
