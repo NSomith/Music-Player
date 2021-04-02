@@ -39,6 +39,8 @@ object ServiceModule {
         setHandleAudioBecomingNoisy(true) //if user plugind the headphone then music will be pused since it will be noisy
     }
 
+    @ServiceScoped
+    @Provides
     fun provideDataSourceFactory(
         @ApplicationContext context: Context
     ) = DefaultDataSourceFactory(context,Util.getUserAgent(context,"Music"))

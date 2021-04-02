@@ -63,7 +63,6 @@ class MainViewModel @ViewModelInject constructor(
 
     fun playORtoggle(medaiItem:Song,toggle:Boolean = false){
         val isPrepared = playbackState.value?.isPrepared ?:false
-
         if (isPrepared && medaiItem.mediaId == curPlayingSong.value?.getString(METADATA_KEY_MEDIA_ID)) {
             playbackState.value?.let { playbackState ->
                 when {
