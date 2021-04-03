@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.os.ResultReceiver
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.PlaybackStateCompat
+import android.util.Log
 import com.example.music.FirebaseMusicSource
 import com.google.android.exoplayer2.ControlDispatcher
 import com.google.android.exoplayer2.Player
@@ -38,6 +39,7 @@ class MusicPlayBackPreparer(
 //       prepare the music when the id/music is ready
 //        playWhenReady means play it or when use play it
         firebaseMusicSource.whenReady {
+            Log.d("mytag","onPrepareFromMediaId")
             val itemToPlay = firebaseMusicSource.songs.find {
                 mediaId == it.description.mediaId
             }

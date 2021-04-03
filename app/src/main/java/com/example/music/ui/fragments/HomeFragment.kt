@@ -18,6 +18,7 @@ import javax.inject.Inject
 class HomeFragment:Fragment(R.layout.fragment_home) {
     lateinit var mainViewModel: MainViewModel
 
+
     @Inject
     lateinit var songAdapter: SongAdapter
 
@@ -26,7 +27,7 @@ class HomeFragment:Fragment(R.layout.fragment_home) {
         mainViewModel = ViewModelProvider(requireActivity()).get(MainViewModel::class.java)
         setupRecylerView()
         subscribeToObservers()
-        songAdapter.setOnItemClickListener {
+        songAdapter.setItemClickListener {
             mainViewModel.playORtoggle(it)
         }
     }

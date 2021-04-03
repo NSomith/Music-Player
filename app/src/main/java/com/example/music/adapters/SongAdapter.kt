@@ -14,19 +14,9 @@ import javax.inject.Inject
 
 class SongAdapter @Inject constructor(
     private val glide:RequestManager
-):RecyclerView.Adapter<SongAdapter.SongViewHolder>(){
+):BaseSongAdapter(R.layout.list_item){
 
-    class SongViewHolder(itemview: View):RecyclerView.ViewHolder(itemview)
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SongViewHolder {
-        return SongViewHolder(
-            LayoutInflater.from(parent.context).inflate(
-                R.layout.list_item,
-                parent,
-                false
-            )
-        )
-    }
+    override val differ = AsyncListDiffer(this,diffutilcallback)
 
     override fun onBindViewHolder(holder: SongViewHolder, position: Int) {
         val song = songs[position]
@@ -42,29 +32,6 @@ class SongAdapter @Inject constructor(
         }
     }
 
-    override fun getItemCount(): Int {
-        return songs.size
-    }
-
-    private val diffutilcallback = object : DiffUtil.ItemCallback<Song>(){
-        override fun areItemsTheSame(oldItem: Song, newItem: Song): Boolean {
-            return oldItem.mediaId == newItem.mediaId
-        }
-
-        override fun areContentsTheSame(oldItem: Song, newItem: Song): Boolean {
-            return oldItem.hashCode() == newItem.hashCode()
-        }
-    }
-
-    private val differ = AsyncListDiffer(this,diffutilcallback)
-
-    private var onItemClickListener:((Song)->Unit)? = null
-
-    fun setOnItemClickListener(listener:(Song)->Unit){
-        onItemClickListener = listener
-    }
-
-    var songs:List<Song>
-        get() = differ.currentList
-        set(value) = differ.submitList(value)
 }
+
+

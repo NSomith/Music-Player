@@ -8,6 +8,7 @@ import android.support.v4.media.MediaBrowserCompat
 import android.support.v4.media.MediaDescriptionCompat
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaSessionCompat
+import android.util.Log
 import androidx.media.MediaBrowserServiceCompat
 import com.example.music.FirebaseMusicSource
 import com.example.music.exoplayer.callback.MusicPlayBackPreparer
@@ -148,9 +149,12 @@ class MusicService : MediaBrowserServiceCompat() {
         parentId: String,
         result: Result<MutableList<MediaBrowserCompat.MediaItem>> //media item can be a songs or a playlist
     ) {
+        Log.d("mytag","hello ji1")
         when(parentId){
             MEDIA_ROOT_ID->{
                 val resultSent = firebaseMusicSource.whenReady { isInitialized->
+                    Log.d("mytag","onLoadChildren")
+                    Log.d("mytag","$isInitialized")
                     if(isInitialized){
                         result.sendResult(firebaseMusicSource.asMediaItems())
                         if(!isPlayerInitialzed && firebaseMusicSource.songs.isNotEmpty()){
@@ -162,11 +166,13 @@ class MusicService : MediaBrowserServiceCompat() {
                         result.sendResult(null)
                     }
                 }
+                Log.d("mytag","the value of resultSent $resultSent")
                 if(!resultSent){
                     result.detach()
                 }
             }
         }
+        Log.d("mytag","hello ji")
     }
 
 //    propate a specific song to the notification

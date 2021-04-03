@@ -93,6 +93,7 @@ dependencies {
 
     // Firebase Coroutines
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.1.1'
+    implementation "androidx.viewpager2:viewpager2:1.0.0"
 
     // ExoPlayer
     api "com.google.android.exoplayer:exoplayer-core:2.11.8"
