@@ -3,16 +3,20 @@ package com.example.music
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
+import android.support.v4.media.session.PlaybackStateCompat
 import android.util.Log
 import androidx.activity.viewModels
+import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager2.widget.ViewPager2
 import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestManager
 import com.example.music.adapters.SwipeSongAdapter
 import com.example.music.data.entities.Song
+import com.example.music.exoplayer.callback.isPlaying
 import com.example.music.exoplayer.toSong
 import com.example.music.other.Status
 import com.example.music.ui.viewModel.MainViewModel
+import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.CoroutineScope
@@ -24,8 +28,9 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
-    private val mainviewModel:MainViewModel by viewModels()
+    private val mainViewModel:MainViewModel by viewModels()
 
+//    private lateinit var mainViewModel: MainViewModel
     @Inject
     lateinit var swipeSongAdapter: SwipeSongAdapter
 
@@ -34,27 +39,46 @@ class MainActivity : AppCompatActivity() {
     @Inject
     lateinit var glide: RequestManager
 
-    val smooth  = false
+    private var playBackState:PlaybackStateCompat?= null
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+//        mainViewModel = ViewModelProvider(this).get(MainViewModel::class.java)
+        Log.d("mainview","$mainViewModel")
         subscribetoObserver()
         vpSong.adapter = swipeSongAdapter
 //        vpSong.orientation = ViewPager2.ORIENTATION_VERTICAL
+
+        vpSong.registerOnPageChangeCallback(object :ViewPager2.OnPageChangeCallback(){
+            override fun onPageSelected(position: Int) {
+                super.onPageSelected(position)
+                if(playBackState?.isPlaying == true){
+                    mainViewModel.playORtoggle(swipeSongAdapter.songs[position])
+                }else{
+                    currentlyPlayingSong = swipeSongAdapter.songs[position]
+                }
+            }
+        })
+
+        ivPlayPause.setOnClickListener {
+            currentlyPlayingSong?.let {
+                mainViewModel.playORtoggle(it,true)
+            }
+        }
     }
 
     private fun swithcViewPagerToCurrentSong(song:Song){
-        val newItemIdx = swipeSongAdapter.songs.indexOf(song)
-        if(newItemIdx !=-1){
-           vpSong.setCurrentItem(newItemIdx)
-            vpSong.currentItem  = newItemIdx
+        val newItemIndex = swipeSongAdapter.songs.indexOf(song)
+        if (newItemIndex != -1) {
+            vpSong.currentItem = newItemIndex
+            currentlyPlayingSong = song
         }
-        Log.d("viewpager","call ${currentlyPlayingSong?.title}")
     }
 
     private fun subscribetoObserver(){
-        mainviewModel.mediaItems.observe(this){
+        mainViewModel.mediaItems.observe(this){
             it?.let {
                when(it.status){
                    Status.SUCCESS->{
@@ -72,12 +96,51 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        mainviewModel.curPlayingSong.observe(this){
+        mainViewModel.curPlayingSong.observe(this){
             if(it == null) return@observe
-            Log.d("viewpager","called")
             currentlyPlayingSong = it.toSong()
             glide.load(currentlyPlayingSong?.imageUrl).into(ivCurSongImage)
             swithcViewPagerToCurrentSong(currentlyPlayingSong?: return@observe)
         }
+
+        mainViewModel.playbackState.observe(this){
+            playBackState =it
+            ivPlayPause.setImageResource(
+                    if(playBackState?.isPlaying == true) R.drawable.ic_pause else R.drawable.ic_play
+            )
+        }
+        mainViewModel.isConnected.observe(this){
+            it?.getContentIfHandled()?.let {
+              when(it.status) {
+                  Status.ERROR -> Snackbar.make(
+                          rootLayout,
+                          it.message ?: "An unknown error occured",
+                          Snackbar.LENGTH_LONG
+                  ).show()
+
+                  else->Unit
+              }
+            }
+        }
+        mainViewModel.networkError.observe(this){
+            it?.getContentIfHandled()?.let {
+                when(it.status) {
+                    Status.ERROR -> Snackbar.make(
+                            rootLayout,
+                            it.message ?: "An unknown error occured",
+                            Snackbar.LENGTH_LONG
+                    ).show()
+
+                    else->Unit
+                }
+            }
+        }
     }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        Log.d("mainview on destroy","$mainViewModel")
+    }
+
+
 }

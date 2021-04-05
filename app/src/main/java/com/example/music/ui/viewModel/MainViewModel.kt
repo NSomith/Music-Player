@@ -67,7 +67,7 @@ class MainViewModel @ViewModelInject constructor(
             playbackState.value?.let { playbackState ->
                 when {
                     playbackState.isPlaying -> if (toggle) musicServiceConnection.transportControls.pause()
-                    playbackState.isPlayEnable -> musicServiceConnection.transportControls.play() //when pasue the song
+                    playbackState.isPlayEnable -> musicServiceConnection.transportControls.play() //when the state is pause the song
                     else -> Unit
                 }
             }
